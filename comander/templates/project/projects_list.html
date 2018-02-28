@@ -30,6 +30,9 @@
 		    <a type="button" class="btn btn-info" data-toggle="modal" data-target="#{{ project.name }}">
 		      	<i class="material-icons">share</i>
 		    </a> 
+	      	<a type="button" class="btn btn-primary" href="{% url 'project_settings' project.id   %}">
+	      		<i class="material-icons">settings</i>
+	      	</a>		    
     	    {% include "modal.html" with modal_id=project.name modal_title="Share Project" project=project modal_form="project/share_project_to_user_form.html" %} 
 	      </td>
 	    </tr>

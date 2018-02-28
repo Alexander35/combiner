@@ -6,6 +6,7 @@ from django.db import models
 
 class Worker(models.Model):
 	name = models.CharField(max_length=100, unique=True)
+	description = models.CharField(max_length=100, null=True, blank=True)
 	input_params = models.CharField(max_length=100, blank=False, null=False)
 	run_command = models.CharField(max_length=100)
 	user = models.ManyToManyField(User)

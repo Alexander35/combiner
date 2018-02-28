@@ -16,4 +16,5 @@ urlpatterns = [
     path('project/new-project/', views.new_project, name='new_project'),
     path('project/visibility/<project_id>/', views.project_visibility, name="project_visibility"),
     path('project/share_project_to/<project_id>/', views.share_project_to, name="share_project_to"),
+    path('project/settings/<project_id>/', views.project_settings, name="project_settings"),
 ]

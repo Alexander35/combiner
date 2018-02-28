@@ -2,7 +2,24 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import AddProjectForm, ShareProjectToUser
-from .models import Project
+from .models import Project, Worker
+
+@login_required
+def project_settings(request, project_id):
+
+	project = Project.objects.get(pk=project_id)
+	worker_list = Worker.objects.filter(user__pk=request.user.id)
+
+	print(worker_list)
+
+	return render(
+            request,
+            'project/projects_settings.html',
+            { 
+                'title' : 'Project Settings',
+                'project' : project,             
+            }
+        ) 
 
 @login_required
 def share_project_to(request, project_id):

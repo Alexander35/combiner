@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from .models import Worker
 
 class ShareWorkerToUser(forms.Form):
 	share_to = forms.ModelChoiceField(
@@ -12,6 +13,19 @@ class ShareProjectToUser(forms.Form):
 			queryset=User.objects.all(), 
 			empty_label="/No One/"
 		)	
+
+# class AddWorkerToProject(forms.Form):
+    
+#     def __init__(self, user, *args, **kwargs):
+#         self.user = user
+#         super().__init__(*args, **kwargs)
+
+    
+#     info = forms.ModelChoiceField(
+#             queryset=Worker.objects.filter(user=self.user), 
+#             empty_label="/No One/"
+#         )
+
 
 class AddProjectForm(forms.Form):
 	name = forms.CharField(
