@@ -1,0 +1,9 @@
+{% include 'error_form_alert.html' with form=share_project_to_user_form %}
+<form class="form-inline" method="post" action="{% url 'share_project_to' project.id %}">
+	{% csrf_token %}
+	{% load widget_tweaks %}
+	<div class="form-group mx-2 my-2">
+	  {% render_field share_project_to_user_form.share_to %}
+	</div> 
+	<button type="submit" class="btn btn-success mx-2 my-2">Share</button>
+</form>

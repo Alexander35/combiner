@@ -1,0 +1,18 @@
+{% extends "general.html" %}
+
+{% block header %}
+
+{% include "header.html" %}
+
+{% endblock %}
+
+{% block body %}
+
+<div class="jumbotron">
+  <h1 class="display-4">Add New Project</h1>
+  <p class="lead">Add new project.</p>
+  <hr class="my-4">
+  {% include 'project/new_project_form.html' %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "general.html" %}
+
+{% block header %}
+
+{% include "header.html" %}
+
+{% endblock %}
+
+{% block body %}
+<div class="table-responsive">
+	<table class="table">
+	  <thead class="thead-light">
+	    <tr>
+	      <th scope="col">#</th>
+	      <th scope="col">project.name</th>
+	      <th scope="col">project.description</th>
+	      <th scope="col">Actions</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	  	{% for project in projects_list %}
+	    <tr>
+	      <th scope="row">{{ project.id  }}</th>
+	      <td>{{ project.name }}</td>
+	      <td>{{ project.description }}</td>
+	      <td> 
+	      	<a type="button" class="btn btn-danger" href="{% url 'project_visibility' project.id   %}">
+	      		<i class="material-icons">visibility_off</i>
+	      	</a>
+		    <a type="button" class="btn btn-info" data-toggle="modal" data-target="#{{ project.name }}">
+		      	<i class="material-icons">share</i>
+		    </a> 
+    	    {% include "modal.html" with modal_id=project.name modal_title="Share Project" project=project modal_form="project/share_project_to_user_form.html" %} 
+	      </td>
+	    </tr>
+	    {% endfor %}
+	  </tbody>
+	</table>
+</div>
+{% endblock %}

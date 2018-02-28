@@ -1,0 +1,14 @@
+{% include 'error_form_alert.html' with form=add_project_form %}
+<form class="form-inline" method="post" action="{% url 'new_project' %}">
+	{% csrf_token %}
+	{% load widget_tweaks %}
+	<div class="form-group mx-2 my-2">
+	  {% render_field add_project_form.name %}
+	</div> 
+	<div class="form-group mx-2 my-2">
+	  {% render_field add_project_form.description %}
+	</div> 		
+	<button type="submit" class="btn btn-success mx-2 my-2">	
+		<span>Create</span>
+	</button>
+</form>
