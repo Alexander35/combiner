@@ -3,21 +3,37 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import AddProjectForm, ShareProjectToUser
 from .models import Project, Worker
+from django.db.models import Q
+
+@login_required
+def project_settings_add_worker(request, project_id, worker_id):
+
+	try:
+		project = Project.objects.get(pk=project_id)
+		project.worker.add(worker_id)
+	except Exception as exc:
+		print('Cannot add worker to the project : {}'.format(exc))
+
+	return redirect('project_settings', project_id)
 
 @login_required
 def project_settings(request, project_id):
 
 	project = Project.objects.get(pk=project_id)
-	worker_list = Worker.objects.filter(user__pk=request.user.id)
+	workers_list = Worker.objects.filter(Q(user__pk=request.user.id) & ~Q(project__id=project.id))
 
-	print(worker_list)
+	project_workers_list = project.worker.all()
+
+	# print(worker_list)
 
 	return render(
             request,
-            'project/projects_settings.html',
+            'project/project_settings.html',
             { 
                 'title' : 'Project Settings',
-                'project' : project,             
+                'project' : project,  
+                'workers_list' : workers_list,
+                'project_workers_list' : project_workers_list,           
             }
         ) 
 

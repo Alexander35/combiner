@@ -1,0 +1,46 @@
+{% extends "general.html" %}
+
+{% block header %}
+
+{% include "header.html" %}
+
+{% endblock %}
+
+{% block body %}
+
+<div class="jumbotron">
+  <h1 class="display-4">Worker Status Page</h1>
+
+  <p class="lead">
+    A status page.
+  </p>
+  <hr class="my-4">
+
+  <p class="lead">
+  	<i class="material-icons">work</i>
+    {{ worker.name }}
+  </p>
+
+  <p class="lead">
+  	<i class="material-icons">touch_app</i>
+    {{ worker.run_command }}
+  </p>
+
+  <p class="lead">
+  	<i class="material-icons">settings_input_component</i>
+    {{ worker.input_params }}
+  </p>
+
+   <p class="lead">
+   	<i class="material-icons">speaker_notes</i>
+    {{ worker.status }}
+  </p>
+
+  <p class="lead">
+  	<i class="material-icons">description</i>
+    {{ worker.description }}
+  </p>
+  
+ </div> 
+
+{% endblock %}

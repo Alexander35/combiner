@@ -20,6 +20,30 @@ from .models import Worker
 #         ) 
 
 @login_required
+def run_worker(request, worker_id):
+
+	worker = Worker.objects.get(pk=worker_id)
+	try:
+		worker.status='Processing'
+		worker.save()
+
+	except Exception as exc:
+		print('cannot execute a worker : {}'.format(exc))	 
+	# try to ran the worker
+	#  run forked proccess...
+
+	return render(
+            request,
+            'worker/worker_status_page.html',
+            { 
+                'title' : 'Worker Status Page',
+                'worker' : worker,
+                # 'workers_list' : workers_list,   
+                # 'share_worker_to_user_form' : share_worker_to_user_form,              
+            }
+        )  
+
+@login_required
 def share_worker_to(request, worker_id):
 	share_worker_to_user_form = ShareWorkerToUser()
 

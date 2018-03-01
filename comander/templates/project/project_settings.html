@@ -8,4 +8,108 @@
 
 {% block body %}
 
+<div class="jumbotron">
+  <h1 class="display-4">Project Settings</h1>
+
+  <p class="lead">
+    You can add workers you have to a project.
+  </p>
+  <hr class="my-4">
+
+  <p class="lead">
+  	<i class="material-icons">work</i>
+  	{{ project.name }}
+  	<a type="button" class="btn btn-info float-right" href="">
+	   	RUN PROJECT 		
+	   	<i class="material-icons">launch</i>
+	</a>
+  </p>
+  <p class="lead">
+  	<i class="material-icons">description</i>
+  	{{ project.description}} 
+  </p>
+
+  <div class="card">
+    <div class="card-header">
+    	Project Workers
+    </div>
+    <div class="card-body">
+	  <div class="table-responsive">
+		<table class="table">
+		  <thead class="thead-light">
+		    <tr>
+		      <th scope="col">#</th>
+		      <th scope="col">worker.name</th>
+		      <th scope="col">worker.run_command</th>
+		      <th scope="col">worker.input_params</th>
+		      <th scope="col">Actions</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		  	{% for project_worker in project_workers_list %}
+		  	<tr>
+		      <th scope="row">{{ project_worker.id  }}</th>
+		      <td>{{ project_worker.name }}</td>
+		      <td>{{ project_worker.run_command }}</td>
+		      <td>{{ project_worker.input_params}}</td>
+		      <td>
+				  <a type="button" class="btn btn-info" href="{% url 'run_worker' project_worker.id %}">
+				      	<i class="material-icons">launch</i>
+				  </a>
+			   </td> 
+		    </tr>
+		    {% endfor %}    	
+		  </tbody>
+		</table>
+	  </div>	
+	</div>
+  </div>
+
+  <div id="accordion">
+   <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Workers You Currently Have
+        </button>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+		  <div class="table-responsive">
+			<table class="table">
+			  <thead class="thead-light">
+			    <tr>
+			      <th scope="col">#</th>
+			      <th scope="col">worker.name</th>
+			      <th scope="col">worker.run_command</th>
+			      <th scope="col">worker.input_params</th>
+			      <th scope="col">Actions</th>
+			    </tr>
+			  </thead>
+			  <tbody>
+			  	{% for worker in workers_list %}
+			    <tr>
+			      <th scope="row">{{ worker.id  }}</th>
+			      <td>{{ worker.name }}</td>
+			      <td>{{ worker.run_command }}</td>
+			      <td>{{ worker.input_params }}</td>
+			      <td> 
+				    <a type="button" class="btn btn-info" href="{% url 'project_settings_add_worker' project.id worker.id %}">
+				      	<i class="material-icons">exposure_plus_1</i>
+				    </a> 
+			      </td>
+			    </tr>
+			    {% endfor %}
+			  </tbody>
+			</table>
+		  </div>
+      </div>
+    </div>
+  </div>
+ </div> 
+
+</div>
+
 {% endblock %}

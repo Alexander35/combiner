@@ -5,12 +5,19 @@ from django.db import models
 # Create your models here.
 
 class Worker(models.Model):
+	STATES = (
+		('Just Added', 'Just Added'),
+		('Processing', 'Processing'),
+		('Ready', 'Ready'),
+		)
+
 	name = models.CharField(max_length=100, unique=True)
 	description = models.CharField(max_length=100, null=True, blank=True)
 	input_params = models.CharField(max_length=100, blank=False, null=False)
 	run_command = models.CharField(max_length=100)
 	user = models.ManyToManyField(User)
 	visibility = models.BooleanField(default=True, blank=False)
+	status = models.CharField(max_length=100, choices=STATES, default='Just Added')
 	created_at = models.DateTimeField(auto_now_add=True, null=True)
 	updated_at = models.DateTimeField(auto_now=True, null=True)	
 

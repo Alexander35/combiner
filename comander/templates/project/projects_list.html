@@ -32,7 +32,10 @@
 		    </a> 
 	      	<a type="button" class="btn btn-primary" href="{% url 'project_settings' project.id   %}">
 	      		<i class="material-icons">settings</i>
-	      	</a>		    
+	      	</a>	
+	      	<a type="button" class="btn btn-primary" href="">
+	      		<i class="material-icons">launch</i>
+	      	</a>	      		    
     	    {% include "modal.html" with modal_id=project.name modal_title="Share Project" project=project modal_form="project/share_project_to_user_form.html" %} 
 	      </td>
 	    </tr>
