@@ -26,10 +26,11 @@ def run_worker(request, worker_id):
 	try:
 
 		worker_initialize(
-			worker.run_command, 
-			worker.input_params,
-			worker.char_set,
-			worker.str_error_type
+			worker
+			# worker.run_command, 
+			# worker.input_params,
+			# worker.char_set,
+			# worker.str_error_type
 			)
 
 		worker.status='Processing'

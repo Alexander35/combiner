@@ -56,10 +56,40 @@ class AddWorkerForm(forms.ModelForm):
             'str_error_type',
         )
         widgets= {
-            'name': forms.TextInput(attrs={'placeholder': 'Worker Name'}),
-            'description': forms.TextInput(attrs={'placeholder': 'Worker Description'}),
-            'input_params': forms.TextInput(attrs={'placeholder': 'Input Params "p1, p2, ..."'}),
-            'run_command': forms.TextInput(attrs={'placeholder': 'Run Command'}),
+            'name': forms.TextInput(
+                attrs={
+                    'placeholder': 'Worker Name',
+                    'class': 'form-control', 
+                    }
+                ),
+            'description': forms.TextInput(
+                attrs={
+                    'placeholder': 'Worker Description',
+                    'class': 'form-control',
+                    }
+                ),
+            'input_params': forms.TextInput(
+                attrs={
+                    'placeholder': 'Input Params "p1, p2, ..."',
+                    'class': 'form-control',
+                    }
+                ),
+            'run_command': forms.TextInput(
+                attrs={
+                    'placeholder': 'Run Command',
+                    'class': 'form-control',
+                    }
+                ),
+            'char_set': forms.Select(
+                attrs={
+                    'class': 'form-control',
+                    }
+                ), 
+            'str_error_type': forms.Select(
+                attrs={
+                    'class': 'form-control',
+                    }
+                ),                            
         }
 
 # class AddWorkerForm(forms.Form):
