@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import AddWorkerForm, ShareWorkerToUser
 from .models import Worker
-
+from .worker_suite import worker_initialize
 # @login_required
 # def worker_settings(request, worker_id):
 # 	worker = Worker.object.get(pk=worker_id)
@@ -24,8 +24,18 @@ def run_worker(request, worker_id):
 
 	worker = Worker.objects.get(pk=worker_id)
 	try:
+
+		worker_initialize(
+			worker.run_command, 
+			worker.input_params,
+			worker.char_set,
+			worker.str_error_type
+			)
+
 		worker.status='Processing'
 		worker.save()
+
+
 
 	except Exception as exc:
 		print('cannot execute a worker : {}'.format(exc))	 

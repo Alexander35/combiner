@@ -11,6 +11,24 @@ class Worker(models.Model):
 		('Ready', 'Ready'),
 		)
 
+	CAHRSET = (
+		('cp886','cp886'),
+		('cp1251','cp1251'),
+		('utf-8','utf-8'),
+		('latin-1','latin-1'),
+		('ascii','ascii'),
+		('koi8-r','koi8-r'),
+		)
+
+	STRENCODEERRORTYPE = (
+		('strict','strict'),
+		('ignore','ignore'),
+		('replace','replace'),
+		('xmlcharrefreplace','xmlcharrefreplace'),
+		('backslashreplace','backslashreplace'),
+		)
+		
+
 	name = models.CharField(max_length=100, unique=True)
 	description = models.CharField(max_length=100, null=True, blank=True)
 	input_params = models.CharField(max_length=100, blank=False, null=False)
@@ -18,6 +36,8 @@ class Worker(models.Model):
 	user = models.ManyToManyField(User)
 	visibility = models.BooleanField(default=True, blank=False)
 	status = models.CharField(max_length=100, choices=STATES, default='Just Added')
+	char_set = models.CharField(max_length=100, choices=CAHRSET, default='utf-8')
+	str_error_type = models.CharField(max_length=100, choices=STRENCODEERRORTYPE, default='backslashreplace')
 	created_at = models.DateTimeField(auto_now_add=True, null=True)
 	updated_at = models.DateTimeField(auto_now=True, null=True)	
 
