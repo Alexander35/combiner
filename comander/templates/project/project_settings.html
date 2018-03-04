@@ -19,10 +19,21 @@
   <p class="lead">
   	<i class="material-icons">work</i>
   	{{ project.name }}
-  	<a type="button" class="btn btn-info float-right" href="">
-	   	RUN PROJECT 		
+
+    <a type="button" class="btn btn-info" href="{% url 'project_status_page' project.id %}">
+			<i class="material-icons">info_outline</i>
+	</a>	
+
+  	<a type="button" class="btn btn-info float-right mx-2" href="{% url 'project_run_in_sequental_mode' project.id %}">
+	   	RUN PROJECT IN Sequental MODE		
 	   	<i class="material-icons">launch</i>
 	</a>
+
+  	<a type="button" class="btn btn-info float-right mx-2" href="{% url 'project_run_in_parallel_mode' project.id %}">
+	   	RUN PROJECT IN ParallelMODE		
+	   	<i class="material-icons">launch</i>
+	   	<i class="material-icons">launch</i>	   	
+	</a>	
   </p>
   <p class="lead">
   	<i class="material-icons">description</i>
@@ -38,7 +49,7 @@
 		<table class="table">
 		  <thead class="thead-light">
 		    <tr>
-		      <th scope="col">#</th>
+		      <th scope="col">Order</th>
 		      <th scope="col">worker.name</th>
 		      <th scope="col">worker.run_command</th>
 		      <th scope="col">worker.input_params</th>
@@ -48,14 +59,23 @@
 		  <tbody>
 		  	{% for project_worker in project_workers_list %}
 		  	<tr>
-		      <th scope="row">{{ project_worker.id  }}</th>
-		      <td>{{ project_worker.name }}</td>
-		      <td>{{ project_worker.run_command }}</td>
-		      <td>{{ project_worker.input_params}}</td>
+		      <th scope="row">{{ project_worker.sequence_number  }}</th>
+		      <td>{{ project_worker.worker.name }}</td>
+		      <td>{{ project_worker.worker.run_command }}</td>
+		      <td>{{ project_worker.worker.input_params}}</td>
 		      <td>
 				  <a type="button" class="btn btn-info" href="{% url 'run_worker' project_worker.id %}">
 				      	<i class="material-icons">launch</i>
 				  </a>
+				  <a type="button" class="btn btn-info" href="{% url 'worker_status_page' project_worker.id %}">
+				      	<i class="material-icons">info_outline</i>
+				  </a>	
+				  <a type="button" class="btn btn-info" href="{% url 'project_sequence_number_up' project.id project_worker.id %}">
+				      	<i class="material-icons">arrow_upward</i>
+				  </a>		
+				  <a type="button" class="btn btn-info" href="{% url 'project_sequence_number_down' project.id project_worker.id %}">
+				      	<i class="material-icons">arrow_downward</i>
+				  </a>					  	  
 			   </td> 
 		    </tr>
 		    {% endfor %}    	

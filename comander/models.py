@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+# from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 
 # Create your models here.
 
@@ -41,6 +43,17 @@ class Worker(models.Model):
 	created_at = models.DateTimeField(auto_now_add=True, null=True)
 	updated_at = models.DateTimeField(auto_now=True, null=True)	
 
+	# project_sequence_number = models.ForeignKey('ProjectSequenceNumber', on_delete=models.SET_NULL, null=True)
+
+	def __str__(self):
+		return 'Name: {}, Run Command: {}, Input Params: {}'.format(self.name, self.run_command, self.input_params)
+
+class ProjectSequenceNumber(models.Model):
+
+	project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True)
+	worker = models.ForeignKey('Worker', on_delete=models.SET_NULL, null=True)
+	sequence_number = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+
 class Project(models.Model):
 	name = models.CharField(max_length=100, unique=True)
 	description = models.CharField(max_length=300)
@@ -58,3 +71,6 @@ class Data(models.Model):
 
 	class Meta:
 		verbose_name_plural = "data"
+
+	def __str__(self):
+		return '{}'.format(self.data)	

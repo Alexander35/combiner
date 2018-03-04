@@ -41,6 +41,43 @@
     {{ worker.description }}
   </p>
   
- </div> 
 
+
+ <div id="accordion">
+   <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Data History
+        </button>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+      <div class="table-responsive">
+      <table class="table">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">data.data</th>
+            <th scope="col">data.created_at</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for data in worker_data_history %}
+          <tr>
+            <th scope="row">{{ data.id  }}</th>
+            <td>{{ data.data }}</td>
+            <td>{{ data.created_at }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+      </div>
+    </div>
+  </div>
+ </div> 
+ </div>
 {% endblock %}

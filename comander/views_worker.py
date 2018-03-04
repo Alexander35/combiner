@@ -2,22 +2,8 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import AddWorkerForm, ShareWorkerToUser
-from .models import Worker
+from .models import Worker, Data
 from .worker_suite import worker_initialize
-# @login_required
-# def worker_settings(request, worker_id):
-# 	worker = Worker.object.get(pk=worker_id)
-# 	share_worker_to_user_form = ShareWorkerToUser()
-
-# 	return render(
-#             request,
-#             'worker/worker_settings.html',
-#             { 
-#                 'title' : 'Worker Settings',
-#                 'worker' : worker,   
-#                 'share_worker_to_user_form' : share_worker_to_user_form,              
-#             }
-#         ) 
 
 @login_required
 def run_worker(request, worker_id):
@@ -27,30 +13,30 @@ def run_worker(request, worker_id):
 
 		worker_initialize(
 			worker
-			# worker.run_command, 
-			# worker.input_params,
-			# worker.char_set,
-			# worker.str_error_type
 			)
 
-		worker.status='Processing'
-		worker.save()
-
-
+		# worker.status='Processing'
+		# worker.save()
 
 	except Exception as exc:
 		print('cannot execute a worker : {}'.format(exc))	 
-	# try to ran the worker
-	#  run forked proccess...
+	return redirect('worker_status_page', worker.id)
+
+@login_required
+def worker_status_page(request, worker_id):	
+	worker = Worker.objects.get(pk=worker_id)
+
+	worker_data_history = Data.objects.order_by('-created_at').filter(from_worker_id=worker) 
+
+	# print('A worker data history {}'. format(worker_data_history))
 
 	return render(
             request,
             'worker/worker_status_page.html',
             { 
                 'title' : 'Worker Status Page',
-                'worker' : worker,
-                # 'workers_list' : workers_list,   
-                # 'share_worker_to_user_form' : share_worker_to_user_form,              
+                'worker' : worker,   
+                'worker_data_history' : worker_data_history,           
             }
         )  
 
@@ -100,9 +86,11 @@ def new_worker(request):
 			try:
 				worker = Worker(
         			name=request.POST['name'],
+        			description=request.POST['description'],
         			input_params=request.POST['input_params'],
         			run_command=request.POST['run_command'],
-
+        			char_set=request.POST['char_set'],
+        			str_error_type=request.POST['str_error_type'],
         			)
 				worker.save()
 				worker.user.add(request.user.id)

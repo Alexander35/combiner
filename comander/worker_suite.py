@@ -21,13 +21,16 @@ def get_params(input_params):
 
 def run_cmd(worker):
 	try:
+
 		i_ps = get_params(worker.input_params)
 		# i_p = input_params
 		print(i_ps)
-		args = [worker.run_command]
+		args = [worker.run_command.rstrip(' ')]
 		[args.append(i_p) for i_p in i_ps ]
 		print(args)
 		sp = subprocess.Popen(args, stdout=subprocess.PIPE)
+		worker.status='Processing'
+		worker.save()
 		data, err = sp.communicate()
 		jdata = json.dumps(
 				{
@@ -38,7 +41,9 @@ def run_cmd(worker):
 		print( json.loads(jdata))
 		output_data = json.loads(jdata)
 		worker.status='Ready'
+		# print(worker.status)
 		worker.save()
+		# print(worker.status)
 		save_data(worker, output_data)
 
 	except Exception as exc:
@@ -46,9 +51,11 @@ def run_cmd(worker):
 		return '{}'.format(exc)	
 
 # def worker_initialize(cmd, input_params, char_set, str_error_type):
-def worker_initialize(worker):
+def worker_initialize(worker, join=None):
 	try:
 		worker_thread = Thread(target=run_cmd, args=(worker,))
 		worker_thread.start()
+		if join:
+			worker_thread.join()
 	except Exception as exc:
 		print('Unable to create worker thread: {}'.format(exc))

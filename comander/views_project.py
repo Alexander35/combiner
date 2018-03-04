@@ -2,8 +2,116 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import AddProjectForm, ShareProjectToUser
-from .models import Project, Worker
+from .models import Project, Worker, ProjectSequenceNumber
 from django.db.models import Q
+from .worker_suite import worker_initialize
+from threading import Thread
+import json
+
+@login_required
+def project_status_page(request, project_id):
+
+	project = Project.objects.get(pk=project_id)
+
+	return render(
+            request,
+            'project/project_status_page.html',
+            { 
+                'title' : 'Project Status Page',
+                'project' : project,          
+            }
+        )
+def proproject_run_in_sequental_mode_stuff(worker):
+	try:
+
+		worker_initialize(
+			worker, True
+			)
+
+		# worker.status='Processing'
+		# worker.save()
+
+	except Exception as exc:
+		print('cannot execute a worker from project: {}'.format(exc))	
+
+@login_required
+def project_run_in_sequental_mode(request, project_id):
+
+	project = Project.objects.get(pk=project_id)
+
+	for worker in project.worker.all():
+
+		worker_thread = Thread(target=proproject_run_in_sequental_mode_stuff, args=(worker,))
+		worker_thread.start()
+
+
+	return redirect('project_status_page', project_id)
+
+@login_required
+def project_run_in_parallel_mode(request, project_id):
+
+	project = Project.objects.get(pk=project_id)
+
+	for worker in project.worker.all():
+
+		try:
+
+			worker_initialize(
+				worker
+				)
+
+			# worker.status='Processing'
+			# worker.save()
+
+		except Exception as exc:
+			print('cannot execute a worker from project: {}'.format(exc))	
+
+	return redirect('project_status_page', project_id)	
+
+@login_required
+def project_sequence_number_up(request, project_id, worker_id):
+	try:
+		project = Project.objects.get(pk=project_id)
+		worker = Worker.objects.get(pk=worker_id)
+		# project_sequence_number = 
+		if ProjectSequenceNumber.objects.filter(project=project, worker=worker).exists():
+			project_sequence_number = ProjectSequenceNumber.objects.get(project=project, worker=worker)
+			project_sequence_number.sequence_number-=1
+			if project_sequence_number.sequence_number < 0:
+				project_sequence_number.sequence_number = 0
+
+		else:
+			project_sequence_number = ProjectSequenceNumber(project=project, worker=worker)	
+
+		project_sequence_number.save()
+
+	except Exception as exc:
+		print('cant update sequence number : {}'.format(exc))	
+
+	return redirect('project_settings', project_id)	
+
+@login_required
+def project_sequence_number_down(request, project_id, worker_id):
+	try:
+		project = Project.objects.get(pk=project_id)
+		worker = Worker.objects.get(pk=worker_id)
+		# project_sequence_number = 
+		if ProjectSequenceNumber.objects.filter(project=project, worker=worker).exists():
+			project_sequence_number = ProjectSequenceNumber.objects.get(project=project, worker=worker)
+			project_sequence_number.sequence_number+=1
+			# if project_sequence_number.sequence_number < 0:
+			# 	project_sequence_number.sequence_number = 0
+
+		else:
+			project_sequence_number = ProjectSequenceNumber(project=project, worker=worker)	
+
+		project_sequence_number.save()
+
+	except Exception as exc:
+		print('cant update sequence number : {}'.format(exc))	
+
+	return redirect('project_settings', project_id)	
+
 
 @login_required
 def project_settings_add_worker(request, project_id, worker_id):
@@ -11,6 +119,12 @@ def project_settings_add_worker(request, project_id, worker_id):
 	try:
 		project = Project.objects.get(pk=project_id)
 		project.worker.add(worker_id)
+		project.save()
+		worker = Worker.objects.get(pk=worker_id)
+		project_sequence_number = ProjectSequenceNumber(project=project, worker=worker)	
+		project_sequence_number.save()			
+		# project_sequence_number_json = 
+		# worker.project_sequence_number
 	except Exception as exc:
 		print('Cannot add worker to the project : {}'.format(exc))
 
@@ -22,7 +136,8 @@ def project_settings(request, project_id):
 	project = Project.objects.get(pk=project_id)
 	workers_list = Worker.objects.filter(Q(user__pk=request.user.id) & ~Q(project__id=project.id))
 
-	project_workers_list = project.worker.all()
+	project_workers_list = ProjectSequenceNumber.objects.order_by('sequence_number').filter(project=project)
+	print(project_workers_list)
 
 	# print(worker_list)
 
