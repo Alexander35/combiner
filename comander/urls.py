@@ -25,5 +25,7 @@ urlpatterns = [
     path('project/run_in_sequental_mode/<project_id>/', views.project_run_in_sequental_mode, name="project_run_in_sequental_mode"), 
     path('project/run_in_parallel_mode/<project_id>/', views.project_run_in_parallel_mode, name="project_run_in_parallel_mode"),  
     path('project/status_page/<project_id>/', views.project_status_page, name="project_status_page"),   
+
+    path('notify/all/', views.notify_all, name="notify_all"),
       
 ]

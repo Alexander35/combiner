@@ -5,6 +5,7 @@ from .forms import AddWorkerForm, ShareWorkerToUser
 from .models import Worker
 from .views_worker import *
 from .views_project import *
+from .views_notify import *
 
 # Create your views here.
 

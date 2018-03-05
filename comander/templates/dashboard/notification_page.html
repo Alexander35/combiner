@@ -1,0 +1,50 @@
+{% extends "general.html" %}
+
+{% block header %}
+
+{% include "header.html" %}
+
+{% endblock %}
+
+{% block body %}
+
+<div class="jumbotron">
+  <h1 class="display-4">Notifications</h1>
+
+  <p class="lead">
+    This is the log page of this System.
+  </p>
+  <hr class="my-4">
+
+  <div class="card">
+    <div class="card-header">
+    	Messages for user: {{ user.username }}
+    </div>
+    <div class="card-body">
+	  <div class="table-responsive">
+		<table class="table">
+		  <thead class="thead-light">
+		    <tr>
+		      <th scope="col">#</th>
+		      <th scope="col">notify.type</th>
+		      <th scope="col">data</th>
+		      <th scope="col">created_at</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		  	{% for message in notifies %}
+		  	<tr>
+		      <th scope="row">{{ message.id }}</th>
+		      <td>{{ message.type }}</td>
+		      <td>{{ message.data }}</td>
+		      <td>{{ message.created_at}}</td>
+		    </tr>
+		    {% endfor %}    	
+		  </tbody>
+		</table>
+	  </div>	
+	</div>
+  </div>
+</div>  	
+
+{% endblock %}

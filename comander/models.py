@@ -6,7 +6,26 @@ from django.core.validators import MinValueValidator
 
 # Create your models here.
 
+NOTIFYTYPE = (
+	('warning', 'warning'),
+	('error', 'error'),
+	('debug', 'debug'),
+	('info', 'info'),
+	)
+
+class Notify(models.Model):
+
+	notify_type = models.CharField(max_length=100, choices=NOTIFYTYPE, default='info')
+	data = JSONField()
+	to =  models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+	created_at = models.DateTimeField(auto_now_add=True, null=True)
+	updated_at = models.DateTimeField(auto_now=True, null=True)	
+
+	def __str__(self):
+		return '{}'.format(self.data)	
+
 class Worker(models.Model):
+	
 	STATES = (
 		('Just Added', 'Just Added'),
 		('Processing', 'Processing'),
@@ -62,6 +81,7 @@ class Worker(models.Model):
 # 	sequence_number = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
 class Project(models.Model):
+	
 	name = models.CharField(max_length=100, unique=True)
 	description = models.CharField(max_length=300)
 	worker = models.ManyToManyField(Worker)
@@ -71,6 +91,7 @@ class Project(models.Model):
 	updated_at = models.DateTimeField(auto_now=True, null=True)	
 
 class Data(models.Model):
+	
 	from_worker = models.ForeignKey('Worker', on_delete=models.SET_NULL, null=True)
 	data = JSONField()
 	created_at = models.DateTimeField(auto_now_add=True, null=True)
