@@ -59,10 +59,10 @@
 		  <tbody>
 		  	{% for project_worker in project_workers_list %}
 		  	<tr>
-		      <th scope="row">{{ project_worker.sequence_number  }}</th>
-		      <td>{{ project_worker.worker.name }}</td>
-		      <td>{{ project_worker.worker.run_command }}</td>
-		      <td>{{ project_worker.worker.input_params}}</td>
+		      <th scope="row">{{ project_worker.priority }}</th>
+		      <td>{{ project_worker.name }}</td>
+		      <td>{{ project_worker.run_command }}</td>
+		      <td>{{ project_worker.input_params}}</td>
 		      <td>
 				  <a type="button" class="btn btn-info" href="{% url 'run_worker' project_worker.id %}">
 				      	<i class="material-icons">launch</i>
@@ -70,12 +70,12 @@
 				  <a type="button" class="btn btn-info" href="{% url 'worker_status_page' project_worker.id %}">
 				      	<i class="material-icons">info_outline</i>
 				  </a>	
-				  <a type="button" class="btn btn-info" href="{% url 'project_sequence_number_up' project.id project_worker.id %}">
+<!-- 				  <a type="button" class="btn btn-info" href="{% url 'project_sequence_number_up' project.id project_worker.id %}">
 				      	<i class="material-icons">arrow_upward</i>
 				  </a>		
 				  <a type="button" class="btn btn-info" href="{% url 'project_sequence_number_down' project.id project_worker.id %}">
 				      	<i class="material-icons">arrow_downward</i>
-				  </a>					  	  
+				  </a>	 -->				  	  
 			   </td> 
 		    </tr>
 		    {% endfor %}    	

@@ -14,7 +14,7 @@ class Worker(models.Model):
 		)
 
 	CAHRSET = (
-		('cp886','cp886'),
+		('cp866','cp866'),
 		('cp1251','cp1251'),
 		('utf-8','utf-8'),
 		('latin-1','latin-1'),
@@ -29,7 +29,12 @@ class Worker(models.Model):
 		('xmlcharrefreplace','xmlcharrefreplace'),
 		('backslashreplace','backslashreplace'),
 		)
-		
+
+	WORKERTYPE = (
+		('data_miner', 'data_miner'),
+		('processor', 'processor'),
+		('harvester', 'harvester'),
+		)
 
 	name = models.CharField(max_length=100, unique=True)
 	description = models.CharField(max_length=100, null=True, blank=True)
@@ -43,16 +48,18 @@ class Worker(models.Model):
 	created_at = models.DateTimeField(auto_now_add=True, null=True)
 	updated_at = models.DateTimeField(auto_now=True, null=True)	
 
+	priority = models.CharField(max_length=100, choices=WORKERTYPE, default='data_miner')
+
 	# project_sequence_number = models.ForeignKey('ProjectSequenceNumber', on_delete=models.SET_NULL, null=True)
 
 	def __str__(self):
 		return 'Name: {}, Run Command: {}, Input Params: {}'.format(self.name, self.run_command, self.input_params)
 
-class ProjectSequenceNumber(models.Model):
+# class ProjectSequenceNumber(models.Model):
 
-	project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True)
-	worker = models.ForeignKey('Worker', on_delete=models.SET_NULL, null=True)
-	sequence_number = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+# 	project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True)
+# 	worker = models.ForeignKey('Worker', on_delete=models.SET_NULL, null=True)
+# 	sequence_number = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
 class Project(models.Model):
 	name = models.CharField(max_length=100, unique=True)

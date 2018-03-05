@@ -2,6 +2,7 @@ from threading import Thread
 import subprocess
 import json
 from .models import Worker, Data
+# import re
 
 def save_data(worker, data):
 	try:
@@ -13,18 +14,40 @@ def save_data(worker, data):
 	except Exception as e:
 		print('unable to save the data for worker_id : {} {}'.format(worker_id, e))
 
-def get_params(input_params):
+def traverse_json_params(worker_name, created_at):
 	try:
+		if created_at == 'latest':
+			data = Data.objects.filter(from_worker__name=worker_name).latest('created_at')
+		if created_at == 'earliest':
+			data = Data.objects.filter(from_worker__name=worker_name).earliest('created_at')	
+		if created_at == 'first':
+			data = Data.objects.filter(from_worker__name=worker_name).first()		
+		if created_at == 'last':
+			data = Data.objects.filter(from_worker__name=worker_name).last()							
+		print('DATA : {}'.format(data))
+		return data.data.get('data')
+	except Exception as exc:
+		print('traverse json params error : {}'.format(exc))
+	# print('234 {}{}'.format(worker_name, created_at))
+
+def get_params(input_params):
+	
+	try:
+		jsi_p = json.loads( input_params)
+		input_params =  traverse_json_params(jsi_p.get('worker_name'),jsi_p.get('created_at'))	
+	except Exception as exc:
+		print('cant read json param : {}'.format(exc))	
+
+	try:
+		print('input_params {}'.format(input_params))
 		return input_params.split(',')
 	except Exception as exc:
-		print('unable to parse input_params to worker : {}'.format(exc))	
+		print('unable to parse input_params to worker : {}'.format(exc))
 
 def run_cmd(worker):
 	try:
-
 		i_ps = get_params(worker.input_params)
-		# i_p = input_params
-		print(i_ps)
+		# print(i_ps)
 		args = [worker.run_command.rstrip(' ')]
 		[args.append(i_p) for i_p in i_ps ]
 		print(args)
@@ -41,16 +64,13 @@ def run_cmd(worker):
 		print( json.loads(jdata))
 		output_data = json.loads(jdata)
 		worker.status='Ready'
-		# print(worker.status)
 		worker.save()
-		# print(worker.status)
 		save_data(worker, output_data)
 
 	except Exception as exc:
 		print('Unable to perform worker job : {}'.format(exc))
 		return '{}'.format(exc)	
 
-# def worker_initialize(cmd, input_params, char_set, str_error_type):
 def worker_initialize(worker, join=None):
 	try:
 		worker_thread = Thread(target=run_cmd, args=(worker,))

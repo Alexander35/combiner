@@ -52,6 +52,7 @@ class AddWorkerForm(forms.ModelForm):
             'description',
             'input_params',
             'run_command',
+            'priority',
             'char_set',
             'str_error_type',
         )
@@ -80,6 +81,11 @@ class AddWorkerForm(forms.ModelForm):
                     'class': 'form-control',
                     }
                 ),
+            'priority': forms.Select(
+                attrs={
+                    'class': 'form-control',
+                    }
+                ),            
             'char_set': forms.Select(
                 attrs={
                     'class': 'form-control',
