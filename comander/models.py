@@ -11,18 +11,30 @@ NOTIFYTYPE = (
 	('error', 'error'),
 	('debug', 'debug'),
 	('info', 'info'),
+	('critical', 'critical'),
 	)
 
 class Notify(models.Model):
 
 	notify_type = models.CharField(max_length=100, choices=NOTIFYTYPE, default='info')
 	data = JSONField()
-	to =  models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+	to =  models.ForeignKey(User, on_delete=models.SET_NULL, null=True, default=1)
 	created_at = models.DateTimeField(auto_now_add=True, null=True)
 	updated_at = models.DateTimeField(auto_now=True, null=True)	
 
 	def __str__(self):
 		return '{}'.format(self.data)	
+
+class Worker_Msg(models.Model):
+
+	notify_type = models.CharField(max_length=100, choices=NOTIFYTYPE, default='info')
+	data = JSONField()
+	worker =  models.ForeignKey('Worker', on_delete=models.SET_NULL, null=True, default=1)
+	created_at = models.DateTimeField(auto_now_add=True, null=True)
+	updated_at = models.DateTimeField(auto_now=True, null=True)	
+
+	def __str__(self):
+		return '{} :: {}'.format(self.worker.name, self.data)			
 
 class Worker(models.Model):
 	

@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import AddProjectForm, ShareProjectToUser
-from .models import Project, Worker
+from .models import Project, Worker, Notify
 from django.db.models import Q
 from .worker_suite import worker_initialize
 from threading import Thread
@@ -33,14 +33,12 @@ def proproject_run_in_sequental_mode_stuff(worker):
 	try:
 
 		worker_initialize(
-			worker, True
+			worker,True
 			)
 
-		# worker.status='Processing'
-		# worker.save()
-
 	except Exception as exc:
-		print('cannot execute a worker from project: {}'.format(exc))	
+		notify = Notify(notify_type='error', data='cannot execute a worker from project: {}'.format(exc))
+		notify.save()	
 
 @login_required
 def project_run_in_sequental_mode(request, project_id):
@@ -50,15 +48,15 @@ def project_run_in_sequental_mode(request, project_id):
 	[data_miner, processor, harvester] = worker_priotity_divide(project.worker.all())
 
 	for worker in data_miner:
-		worker_thread = Thread(target=proproject_run_in_sequental_mode_stuff, args=(worker,))
+		worker_thread = Thread(target=proproject_run_in_sequental_mode_stuff, args=(worker))
 		worker_thread.start()
 
 	for worker in processor:
-		worker_thread = Thread(target=proproject_run_in_sequental_mode_stuff, args=(worker,))
+		worker_thread = Thread(target=proproject_run_in_sequental_mode_stuff, args=(worker))
 		worker_thread.start()
 
 	for worker in harvester:
-		worker_thread = Thread(target=proproject_run_in_sequental_mode_stuff, args=(worker,))
+		worker_thread = Thread(target=proproject_run_in_sequental_mode_stuff, args=(worker))
 		worker_thread.start()
 
 
@@ -72,71 +70,14 @@ def project_run_in_parallel_mode(request, project_id):
 
 		[data_miner, processor, harvester] = worker_priotity_divide(project.worker.all())	
 
-		[worker_initialize(worker) for worker in data_miner]
-		[worker_initialize(worker) for worker in processor]	
-		[worker_initialize(worker) for worker in harvester]
+		[worker_initialize(worker, request.user) for worker in data_miner]
+		[worker_initialize(worker, request.user) for worker in processor]	
+		[worker_initialize(worker, request.user) for worker in harvester]
 	except Exception as exc:
-		print('cannot execute project in parallel mode : {}'.format(exc))		
-	# for worker in project.worker.all():
-
-	# 	try:
-
-	# 		worker_initialize(
-	# 			worker
-	# 			)
-
-	# 		# worker.status='Processing'
-	# 		# worker.save()
-
-	# 	except Exception as exc:
-	# 		print('cannot execute a worker from project: {}'.format(exc))	
+		notify = Notify(notify_type='error', data='cannot execute project in parallel mode : {}'.format(exc), to=request.user)
+		notify.save()			
 
 	return redirect('project_status_page', project_id)	
-
-@login_required
-def project_sequence_number_up(request, project_id, worker_id):
-	# try:
-	# 	project = Project.objects.get(pk=project_id)
-	# 	worker = Worker.objects.get(pk=worker_id)
-	# 	# project_sequence_number = 
-	# 	if ProjectSequenceNumber.objects.filter(project=project, worker=worker).exists():
-	# 		project_sequence_number = ProjectSequenceNumber.objects.get(project=project, worker=worker)
-	# 		project_sequence_number.sequence_number-=1
-	# 		if project_sequence_number.sequence_number < 0:
-	# 			project_sequence_number.sequence_number = 0
-
-	# 	else:
-	# 		project_sequence_number = ProjectSequenceNumber(project=project, worker=worker)	
-
-	# 	project_sequence_number.save()
-
-	# except Exception as exc:
-	# 	print('cant update sequence number : {}'.format(exc))	
-
-	return redirect('project_settings', project_id)	
-
-@login_required
-def project_sequence_number_down(request, project_id, worker_id):
-	# try:
-	# 	project = Project.objects.get(pk=project_id)
-	# 	worker = Worker.objects.get(pk=worker_id)
-	# 	# project_sequence_number = 
-	# 	if ProjectSequenceNumber.objects.filter(project=project, worker=worker).exists():
-	# 		project_sequence_number = ProjectSequenceNumber.objects.get(project=project, worker=worker)
-	# 		project_sequence_number.sequence_number+=1
-	# 		# if project_sequence_number.sequence_number < 0:
-	# 		# 	project_sequence_number.sequence_number = 0
-
-	# 	else:
-	# 		project_sequence_number = ProjectSequenceNumber(project=project, worker=worker)	
-
-	# 	project_sequence_number.save()
-
-	# except Exception as exc:
-	# 	print('cant update sequence number : {}'.format(exc))	
-
-	return redirect('project_settings', project_id)	
-
 
 @login_required
 def project_settings_add_worker(request, project_id, worker_id):
@@ -146,12 +87,9 @@ def project_settings_add_worker(request, project_id, worker_id):
 		project.worker.add(worker_id)
 		project.save()
 		worker = Worker.objects.get(pk=worker_id)
-		# project_sequence_number = ProjectSequenceNumber(project=project, worker=worker)	
-		# project_sequence_number.save()			
-		# project_sequence_number_json = 
-		# worker.project_sequence_number
 	except Exception as exc:
-		print('Cannot add worker to the project : {}'.format(exc))
+		notify = Notify(notify_type='error', data='Cannot add worker to the project : {}'.format(exc), to=request.user)
+		notify.save()
 
 	return redirect('project_settings', project_id)
 
@@ -162,10 +100,6 @@ def project_settings(request, project_id):
 	workers_list = Worker.objects.filter(Q(user__pk=request.user.id) & ~Q(project__id=project.id))
 
 	project_workers_list = Worker.objects.filter(project__id=project_id)
-	# project_workers_list = ProjectSequenceNumber.objects.order_by('sequence_number').filter(project=project)
-	# print(project_workers_list)
-
-	# print(worker_list)
 
 	return render(
             request,
@@ -192,8 +126,9 @@ def share_project_to(request, project_id):
 				project.user.add(user)
 				project.save()
 			except Exception as exc:
+				notify = Notify(notify_type='error', data='Error when sharing project to user: {}'.format(exc), to=request.user)
+				notify.save()
 				share_project_to_user_form.add_error(None, exc)
-				print('Error when sharing project to user: {}'.format(exc))
 
 	return redirect('projects_list')	
 
@@ -233,7 +168,8 @@ def new_project(request):
 				return redirect('projects_list')
 			except Exception as exc:
 				add_project_form.add_error(None, exc)
-				print('Ann error occured when create new Project: {}'.format(exc))
+				notify = Notify(notify_type='error', data='Ann error occured when create new Project: {}'.format(exc), to=request.user)
+				notify.save()
 
 	return render(
             request,
@@ -249,7 +185,9 @@ def project_visibility(request, project_id):
 	try:
 		project = Project.objects.get(pk=project_id)
 		project.user.remove(request.user)
+		project.save()
 	except Exception as exc:
-		print('cant remove user form project : {}'.format(exc))
+		notify = Notify(notify_type='error', data='cant remove user form project : {} {}'.format(project.name, exc), to=request.user)
+		notify.save()		
 
 	return redirect('projects_list')		

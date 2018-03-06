@@ -13,9 +13,6 @@ urlpatterns = [
 	path('worker/run/<worker_id>/', views.run_worker, name="run_worker"),
     path('worker/status_page/<worker_id>/', views.worker_status_page, name="worker_status_page"),
 
-    path('project/settings/sequence_number_up/<project_id>/<worker_id>/', views.project_sequence_number_up, name="project_sequence_number_up"),
-    path('project/settings/sequence_number_down/<project_id>/<worker_id>/', views.project_sequence_number_down, name="project_sequence_number_down"),    
-
     path('project/projects-list/', views.projects_list, name='projects_list'),
     path('project/new-project/', views.new_project, name='new_project'),
     path('project/visibility/<project_id>/', views.project_visibility, name="project_visibility"),

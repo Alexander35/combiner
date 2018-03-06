@@ -2,24 +2,20 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import AddWorkerForm, ShareWorkerToUser
-from .models import Worker, Data
+from .models import Worker, Data, Notify, Worker_Msg
 from .worker_suite import worker_initialize
 
 @login_required
 def run_worker(request, worker_id):
-
 	worker = Worker.objects.get(pk=worker_id)
 	try:
-
 		worker_initialize(
-			worker
+			worker, request.user
 			)
-
-		# worker.status='Processing'
-		# worker.save()
-
 	except Exception as exc:
-		print('cannot execute a worker : {}'.format(exc))	 
+		notify = Notify(notify_type='error', data='Cannot execute a worker : {} {}'.format(worker.name, exc), to=request.user)
+		notify.save()
+
 	return redirect('worker_status_page', worker.id)
 
 @login_required
@@ -27,8 +23,7 @@ def worker_status_page(request, worker_id):
 	worker = Worker.objects.get(pk=worker_id)
 
 	worker_data_history = Data.objects.order_by('-created_at').filter(from_worker_id=worker) 
-
-	# print('A worker data history {}'. format(worker_data_history))
+	worker_logs = Worker_Msg.objects.order_by('-created_at').filter(worker=worker)
 
 	return render(
             request,
@@ -36,7 +31,8 @@ def worker_status_page(request, worker_id):
             { 
                 'title' : 'Worker Status Page',
                 'worker' : worker,   
-                'worker_data_history' : worker_data_history,           
+                'worker_data_history' : worker_data_history,   
+                'worker_logs' : worker_logs,        
             }
         )  
 
@@ -55,7 +51,8 @@ def share_worker_to(request, worker_id):
 				worker.save()
 			except Exception as exc:
 				share_worker_to_user_form.add_error(None, exc)
-				print('Error when sharing worker to user: {}'.format(exc))
+				notify = Notify(notify_type='error', data='Error when sharing worker to user: {}'.format(exc), to=request.user)
+				notify.save()
 
 	return redirect('workers_list')	
 
@@ -99,7 +96,8 @@ def new_worker(request):
 				return redirect('workers_list')
 			except Exception as exc:
 				add_worker_form.add_error(None, exc)
-				print('Ann error occured when create new Worker: {}'.format(exc))
+				notify = Notify(notify_type='error', data='Ann error occured when create new Worker: {}'.format(exc), to=request.user)
+				notify.save()				
 
 	return render(
             request,
@@ -116,6 +114,7 @@ def worker_visibility(request, worker_id):
 		worker = Worker.objects.get(pk=worker_id)
 		worker.user.remove(request.user)
 	except Exception as exc:
-		print('cant remove user form worker : {}'.format(exc))
+		notify = Notify(notify_type='error', data='cant remove user form worker : {}'.format(exc), to=request.user)
+		notify.save()
 
 	return redirect('workers_list')	
