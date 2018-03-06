@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
 from .models import Worker
-# from django.forms import ModelForm
 
 class ShareWorkerToUser(forms.Form):
 	share_to = forms.ModelChoiceField(
@@ -14,19 +13,6 @@ class ShareProjectToUser(forms.Form):
 			queryset=User.objects.all(), 
 			empty_label="/No One/"
 		)	
-
-# class AddWorkerToProject(forms.Form):
-    
-#     def __init__(self, user, *args, **kwargs):
-#         self.user = user
-#         super().__init__(*args, **kwargs)
-
-    
-#     info = forms.ModelChoiceField(
-#             queryset=Worker.objects.filter(user=self.user), 
-#             empty_label="/No One/"
-#         )
-
 
 class AddProjectForm(forms.Form):
 	name = forms.CharField(
@@ -97,54 +83,3 @@ class AddWorkerForm(forms.ModelForm):
                     }
                 ),                            
         }
-
-# class AddWorkerForm(forms.Form):
-
-#     CAHRSET = (
-#         ('cp886','cp886'),
-#         ('cp1251','cp1251'),
-#         ('utf-8','utf-8'),
-#         ('latin-1','latin-1'),
-#         ('ascii','ascii'),
-#         ('koi8-r','koi8-r'),
-#         )
-
-#     STRENCODEERRORTYPE = (
-#         ('strict','strict'),
-#         ('ignore','ignore'),
-#         ('replace','replace'),
-#         ('xmlcharrefreplace','xmlcharrefreplace'),
-#         ('backslashreplace','backslashreplace'),
-#         )
-        
-
-#     chat_set = forms.ModelChoiceField(
-#             queryset= 
-#         )
-
-#     name = forms.CharField(
-# 		widget=forms.TextInput(
-#             attrs={
-#                 'class': 'form-control',
-#                 'placeholder': 'Worker Name',
-#                 'type': 'text',
-
-#             }))
-
-#     input_params = forms.CharField(
-# 		widget=forms.TextInput(
-#             attrs={
-#                 'class': 'form-control',
-#                 'placeholder': 'Input Params "p1, p2, ..." ',
-#                 'type': 'text',
-
-#             }))
-
-#     run_command = forms.CharField(
-# 		widget=forms.TextInput(
-#             attrs={
-#                 'class': 'form-control',
-#                 'placeholder': 'Run Command',
-#                 'type': 'text',
-
-#             }))

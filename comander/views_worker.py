@@ -82,14 +82,14 @@ def new_worker(request):
 		if add_worker_form.is_valid():
 			try:
 				worker = Worker(
-        			name=request.POST['name'],
-        			description=request.POST['description'],
-        			input_params=request.POST['input_params'],
-        			run_command=request.POST['run_command'],
-        			priority=request.POST['priority'],
-        			char_set=request.POST['char_set'],
-        			str_error_type=request.POST['str_error_type'],
-        			)
+	    			name=request.POST['name'],
+	    			description=request.POST['description'],
+	    			input_params=request.POST['input_params'],
+	    			run_command=request.POST['run_command'],
+	    			priority=request.POST['priority'],
+	    			char_set=request.POST['char_set'],
+	    			str_error_type=request.POST['str_error_type'],
+	    			)
 				worker.save()
 				worker.user.add(request.user.id)
 				worker.save()
