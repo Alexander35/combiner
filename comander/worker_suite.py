@@ -33,23 +33,31 @@ def get_params(worker):
 	
 	try:
 		jsi_p = json.loads( worker.input_params)
-		input_params =  traverse_json_params(worker,jsi_p.get('worker_name'),jsi_p.get('created_at'))	
+		input_params = traverse_json_params(worker,jsi_p.get('worker_name'),jsi_p.get('created_at'))	
+		splitted_args = input_params.split(',')
+		args=[]
+		args.append(worker.run_command)
+		[args.append(i_p) for i_p in splitted_args ]
+		return args
 	except Exception as exc:
 		notify = Worker_Msg(notify_type='warning', data='cant read json param  : {}'.format(exc), worker=worker)
 		notify.save()
 
 	try:
 		# print('input_params {}'.format(input_params))
-		return worker.input_params.split(',')
+		splitted_args =  worker.input_params.split(',')
+		args = [worker.run_command.rstrip(' ')]
+		[args.append(i_p) for i_p in splitted_args ]
+		return args
+
 	except Exception as exc:
 		notify = Worker_Msg(notify_type='error', data='unable to parse input_params to worker : {}'.format(exc), worker=worker)
 		notify.save()
 
 def run_cmd(worker):
 	try:
-		i_ps = get_params(worker)
-		args = [worker.run_command.rstrip(' ')]
-		[args.append(i_p) for i_p in i_ps ]
+		args = get_params(worker)
+
 		sp = subprocess.Popen(args, stdout=subprocess.PIPE)
 		worker.status='Processing'
 		worker.save()

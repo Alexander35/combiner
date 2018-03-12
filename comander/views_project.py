@@ -48,15 +48,15 @@ def project_run_in_sequental_mode(request, project_id):
 	[data_miner, processor, harvester] = worker_priotity_divide(project.worker.all())
 
 	for worker in data_miner:
-		worker_thread = Thread(target=proproject_run_in_sequental_mode_stuff, args=(worker))
+		worker_thread = Thread(target=proproject_run_in_sequental_mode_stuff, args=(worker,))
 		worker_thread.start()
 
 	for worker in processor:
-		worker_thread = Thread(target=proproject_run_in_sequental_mode_stuff, args=(worker))
+		worker_thread = Thread(target=proproject_run_in_sequental_mode_stuff, args=(worker,))
 		worker_thread.start()
 
 	for worker in harvester:
-		worker_thread = Thread(target=proproject_run_in_sequental_mode_stuff, args=(worker))
+		worker_thread = Thread(target=proproject_run_in_sequental_mode_stuff, args=(worker,))
 		worker_thread.start()
 
 
@@ -70,9 +70,15 @@ def project_run_in_parallel_mode(request, project_id):
 
 		[data_miner, processor, harvester] = worker_priotity_divide(project.worker.all())	
 
-		[worker_initialize(worker, request.user) for worker in data_miner]
-		[worker_initialize(worker, request.user) for worker in processor]	
-		[worker_initialize(worker, request.user) for worker in harvester]
+		for worker in data_miner:
+			Thread(target=worker_initialize, args=(worker,)).start()
+		for worker in processor:
+			Thread(target=worker_initialize, args=(worker,)).start()
+		for worker in harvester:
+			Thread(target=worker_initialize, args=(worker,)).start()						
+		# [worker_initialize(worker, request.user) for worker in data_miner]
+		# [worker_initialize(worker, request.user) for worker in processor]	
+		# [worker_initialize(worker, request.user) for worker in harvester]
 	except Exception as exc:
 		notify = Notify(notify_type='error', data='cannot execute project in parallel mode : {}'.format(exc), to=request.user)
 		notify.save()			
