@@ -30,29 +30,43 @@ def traverse_json_params(worker, worker_name, created_at):
 		notify.save()		
 
 def get_params(worker):
-	
-	try:
-		jsi_p = json.loads( worker.input_params)
-		input_params = traverse_json_params(worker,jsi_p.get('worker_name'),jsi_p.get('created_at'))	
-		splitted_args = input_params.split(',')
-		args=[]
-		args.append(worker.run_command)
-		[args.append(i_p) for i_p in splitted_args ]
-		return args
-	except Exception as exc:
-		notify = Worker_Msg(notify_type='warning', data='cant read json param  : {}'.format(exc), worker=worker)
-		notify.save()
 
-	try:
-		# print('input_params {}'.format(input_params))
-		splitted_args =  worker.input_params.split(',')
-		args = [worker.run_command.rstrip(' ')]
-		[args.append(i_p) for i_p in splitted_args ]
-		return args
+	if(worker.input_type == 'db_data'):	
+		try:
+			jsi_p = json.loads( worker.input_params)
+			input_params = traverse_json_params(worker,jsi_p.get('worker_name'),jsi_p.get('created_at'))	
+			splitted_args = input_params.split(',')
+			args=[]
+			args.append(worker.run_command)
+			[args.append(i_p) for i_p in splitted_args ]
+			return args
+		except Exception as exc:
+			notify = Worker_Msg(notify_type='warning', data='cant read json param  : {}'.format(exc), worker=worker)
+			notify.save()
 
-	except Exception as exc:
-		notify = Worker_Msg(notify_type='error', data='unable to parse input_params to worker : {}'.format(exc), worker=worker)
-		notify.save()
+	if(worker.input_type == 'native'):
+		try:
+			splitted_args =  worker.input_params.split(',')
+			args = [worker.run_command.rstrip(' ')]
+			[args.append(i_p) for i_p in splitted_args ]
+			return args
+
+		except Exception as exc:
+			notify = Worker_Msg(notify_type='error', data='unable to parse input_params to worker : {}'.format(exc), worker=worker)
+			notify.save()
+
+	if(worker.input_type == 'db_multiple_data'):
+		try:
+			jsi_p = json.loads( worker.input_params)
+			input_params = traverse_json_params(worker,jsi_p.get('worker_name'),jsi_p.get('created_at'))	
+			# splitted_args = input_params.split(',')
+			# args=[]
+			# args.append(worker.run_command)
+			# [args.append(i_p) for i_p in splitted_args ]
+			return input_params
+		except Exception as exc:
+			notify = Worker_Msg(notify_type='warning', data='cant read json param  : {}'.format(exc), worker=worker)
+			notify.save()	
 
 def run_cmd(worker):
 	try:
@@ -79,8 +93,7 @@ def run_cmd(worker):
 
 def worker_initialize(worker, join=None):
 	try:
-		worker_thread = Thread(target=run_cmd, args=(worker,))
-		worker_thread.start()
+		worker_thread = Thread(target=run_cmd, args=(worker,)).start()
 		if join:
 			worker_thread.join()
 	except Exception as exc:

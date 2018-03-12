@@ -67,9 +67,16 @@ class Worker(models.Model):
 		('harvester', 'harvester'),
 		)
 
+	INPUT_TYPES = (
+		('native', 'native'),
+		('db_data', 'db_data'),
+		('db_multiple_data', 'db_multiple_data'),
+		)
+
 	name = models.CharField(max_length=100, unique=True)
 	description = models.CharField(max_length=100, null=True, blank=True)
-	input_params = models.CharField(max_length=100, blank=False, null=False)
+	input_params = models.CharField(max_length=10000, blank=False, null=False)
+	input_type = models.CharField(max_length=100, choices=INPUT_TYPES, default='native')	
 	run_command = models.CharField(max_length=100)
 	user = models.ManyToManyField(User)
 	visibility = models.BooleanField(default=True, blank=False)
