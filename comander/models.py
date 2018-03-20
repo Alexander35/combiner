@@ -73,11 +73,18 @@ class Worker(models.Model):
 		('db_multiple_data', 'db_multiple_data'),
 		)
 
+	COMMAND_TYPE = (
+		('os_command', 'os_command'),
+		('python_script', 'python_script'),
+		)	
+
 	name = models.CharField(max_length=100, unique=True)
 	description = models.CharField(max_length=100, null=True, blank=True)
 	input_params = models.CharField(max_length=10000, blank=False, null=False)
 	input_type = models.CharField(max_length=100, choices=INPUT_TYPES, default='native')	
+	path = models.CharField(max_length=300, default=None, null=True, blank=True)
 	run_command = models.CharField(max_length=100)
+	command_type = models.CharField(max_length=100, choices=COMMAND_TYPE, default='os_command')
 	user = models.ManyToManyField(User)
 	visibility = models.BooleanField(default=True, blank=False)
 	status = models.CharField(max_length=100, choices=STATES, default='Just Added')

@@ -84,6 +84,7 @@ def new_worker(request):
 				worker = Worker(
 	    			name=request.POST['name'],
 	    			description=request.POST['description'],
+	    			path=request.POST['path'],
 	    			input_params=request.POST['input_params'],
 	    			run_command=request.POST['run_command'],
 	    			priority=request.POST['priority'],

@@ -36,8 +36,10 @@ class AddWorkerForm(forms.ModelForm):
         fields = (
             'name',
             'description',
+            'path',
             'input_params',
             'run_command',
+            'command_type',
             'priority',
             'char_set',
             'str_error_type',
@@ -55,6 +57,13 @@ class AddWorkerForm(forms.ModelForm):
                     'class': 'form-control',
                     }
                 ),
+            'path': forms.TextInput(
+                attrs={
+                    'placeholder': 'Absolute Path',
+                    'class': 'form-control',
+                    'required' : False,
+                    }
+                ),            
             'input_params': forms.TextInput(
                 attrs={
                     'placeholder': 'Input Params "p1, p2, ..."',
@@ -67,6 +76,11 @@ class AddWorkerForm(forms.ModelForm):
                     'class': 'form-control',
                     }
                 ),
+            'command_type': forms.Select(
+                attrs={
+                    'class': 'form-control',
+                    }
+                ),            
             'priority': forms.Select(
                 attrs={
                     'class': 'form-control',

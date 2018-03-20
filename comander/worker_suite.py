@@ -17,6 +17,7 @@ def save_data(worker, data):
 def traverse_json_params(worker, worker_name, created_at):
 	try:
 		if created_at == 'latest':
+			print('latest worker_name : {}'.format(worker_name))
 			data = Data.objects.filter(from_worker__name=worker_name).latest('created_at')
 		if created_at == 'earliest':
 			data = Data.objects.filter(from_worker__name=worker_name).earliest('created_at')	
@@ -37,7 +38,7 @@ def get_params(worker):
 			input_params = traverse_json_params(worker,jsi_p.get('worker_name'),jsi_p.get('created_at'))	
 			splitted_args = input_params.split(',')
 			args=[]
-			args.append(worker.run_command)
+			args.append('{}{}'.format(worker.path, worker.run_command))
 			[args.append(i_p) for i_p in splitted_args ]
 			return args
 		except Exception as exc:
@@ -47,7 +48,7 @@ def get_params(worker):
 	if(worker.input_type == 'native'):
 		try:
 			splitted_args =  worker.input_params.split(',')
-			args = [worker.run_command.rstrip(' ')]
+			args = ['{}{}'.format( worker.path, worker.run_command.rstrip(' '))]
 			[args.append(i_p) for i_p in splitted_args ]
 			return args
 
@@ -58,12 +59,13 @@ def get_params(worker):
 	if(worker.input_type == 'db_multiple_data'):
 		try:
 			jsi_p = json.loads( worker.input_params)
+			print('input params : {}'.format(jsi_p))
 			input_params = traverse_json_params(worker,jsi_p.get('worker_name'),jsi_p.get('created_at'))	
 			# splitted_args = input_params.split(',')
-			# args=[]
-			# args.append(worker.run_command)
+			args=[]
+			args.append('{}{}'.format(worker.path, worker.run_command))
 			# [args.append(i_p) for i_p in splitted_args ]
-			return input_params
+			return '{}{}'.format(args, input_params)
 		except Exception as exc:
 			notify = Worker_Msg(notify_type='warning', data='cant read json param  : {}'.format(exc), worker=worker)
 			notify.save()	
@@ -71,6 +73,8 @@ def get_params(worker):
 def run_cmd(worker):
 	try:
 		args = get_params(worker)
+
+		print('JOB args : {}'.format(args))
 
 		sp = subprocess.Popen(args, stdout=subprocess.PIPE)
 		worker.status='Processing'
@@ -93,7 +97,8 @@ def run_cmd(worker):
 
 def worker_initialize(worker, join=None):
 	try:
-		worker_thread = Thread(target=run_cmd, args=(worker,)).start()
+		worker_thread = Thread(target=run_cmd, args=(worker,))
+		worker_thread.start()
 		if join:
 			worker_thread.join()
 	except Exception as exc:

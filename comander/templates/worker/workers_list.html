@@ -35,9 +35,6 @@
 		    <a type="button" class="btn btn-info" href="{% url 'worker_status_page' worker.id %}">
 		      	<i class="material-icons">info_outline</i>
 		    </a>
-		    <a type="button" class="btn btn-info" href="{% url 'worker_settings' worker.id %}">
-		      	<i class="material-icons">settings</i>
-		    </a>	
 		    			     
     	    {% include "modal.html" with modal_id=worker.name modal_title="Share Worker" modal_form="worker/share_worker_to_user_form.html" %} 
 	      </td>
